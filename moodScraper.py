@@ -62,7 +62,7 @@ def postGrab(subreddit_name):
 redd = praw.Reddit(client_id=, client_secret=, user_agent=, username=, password=)
 
 #A list of the subreddits being used, feel free to add as many as available. This scraper is meant to get all the "moods," but it works for all subreddits
-subreddit_list = ['angry',"SuicideWatch",'depression','happy']
+subreddit_list = ['angry',"SuicideWatch",'depression','happy','BPD','mentalillness','sad','hate']
 
 #Using the function on each subreddit
 for sub in subreddit_list:
