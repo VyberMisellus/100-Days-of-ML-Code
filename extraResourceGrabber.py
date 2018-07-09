@@ -27,7 +27,7 @@ soup = bs(get(url).text,'html.parser')
 
 #Luckily all hrefs on the site are of the .txt files
 a = soup.find_all("a")
-
+i = 0 #indexing for naming purposes
 #Going through all the links on the site, opening the files, writing them, and closing. Notice that not all files will be saved as .txt, for some reason
 for link in a:
     
@@ -39,9 +39,9 @@ for link in a:
     content=urllib.request.urlopen(url+string)
     
     #Writing the file
-    book = open(link.text, "w")
+    book = open(str(i)+link.text[0:3]+".txt", "w")
     for line in content:
         book.write(str(line))
         print(str(line))
     book.close()
-    
+    i+=1
