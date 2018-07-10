@@ -13,7 +13,6 @@ import urllib
 
 #Making the directories
 
-#______________________________ANOTHER LINK TO TRY: http://www.textfiles.com/etext/FICTION/
 try:
     os.mkdir(r"C:\Users\Isaac Csekey\Documents\MoodData\books")
 except FileExistsError:
@@ -21,7 +20,7 @@ except FileExistsError:
 os.chdir(r"C:\Users\Isaac Csekey\Documents\MoodData\books")
 
 #A main url, adding on the text files later
-url = 'http://www.textfiles.com/etext/NONFICTION/'
+url = 'http://www.textfiles.com/etext/MODERN/' #Can also replace the last bit with FICTION and NONFICTION for more goodies
 
 
 #Getting the html from the main site
