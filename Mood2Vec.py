@@ -22,7 +22,7 @@ nltk.download("punkt")
 nltk.download("stopwords")
 
 #The list of subreddit files
-subreddits = ['angry',"SuicideWatch",'depression','happy','BPD','mentalillness','sad','hate']
+subreddits = ['angry',"SuicideWatch",'depression','happy','BPD','mentalillness','sad','hate','mentalhealth','depression_help','depressionregimens','Anxiety','books']
 #The path that the files were saved to
 path = r"C:\Users\Isaac Csekey\Documents\MoodData"
 
@@ -80,10 +80,12 @@ all_subs = readPost(path,subreddits)
 sentences = listOfWords(all_subs)
 
 #Creating the word2vec
-sadvectors = w2v.Word2Vec(sentences, seed= 42, workers=multiprocessing.cpu_count(), size = 300, min_count = 3, window = 10, sample = 1e-3 )
+sadvectors = w2v.Word2Vec(sentences, seed= 42, workers=multiprocessing.cpu_count(), size = 250, min_count = 3, window = 10, sample = 1e-3 )
 
 #Training the word2vec neural net
 sadvectors.train(sentences,total_examples=len(sentences),epochs=50)
+
+os.chdir(r'C:\Users\Isaac Csekey\Documents\MoodData')
 
 #Saving the model
 sadvectors.save('mood2vec.w2v')

@@ -12,6 +12,8 @@ import os
 import urllib
 
 #Making the directories
+
+#______________________________ANOTHER LINK TO TRY: http://www.textfiles.com/etext/FICTION/
 try:
     os.mkdir(r"C:\Users\Isaac Csekey\Documents\MoodData\books")
 except FileExistsError:
@@ -19,7 +21,7 @@ except FileExistsError:
 os.chdir(r"C:\Users\Isaac Csekey\Documents\MoodData\books")
 
 #A main url, adding on the text files later
-url = 'http://www.textfiles.com/etext/FICTION/'
+url = 'http://www.textfiles.com/etext/NONFICTION/'
 
 
 #Getting the html from the main site
@@ -39,7 +41,7 @@ for link in a:
     content=urllib.request.urlopen(url+string)
     
     #Writing the file
-    book = open(str(i)+link.text[0:3]+".txt", "w")
+    book = open(str(i)+link.text[0:4]+".txt", "w")
     for line in content:
         book.write(str(line))
         print(str(line))
