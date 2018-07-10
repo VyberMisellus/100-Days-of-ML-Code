@@ -31,7 +31,7 @@ all_subs = u""
 #The function to read a list of files in each directory
 def readPost(parent_directory, subreddit):
     
-    #What will be returned: A big dictionary!
+    #Returning a big ol string
     all_subs = u""
     
     for sub in subreddit:
@@ -49,10 +49,7 @@ def readPost(parent_directory, subreddit):
                         all_subs += postfile.read()
                     except UnicodeDecodeError:
                         pass
-        
-                
-                #all_posts.append(tempfile)
-                
+                    
     #Returning the lowercase words 
     return all_subs.lower()
 
@@ -85,7 +82,7 @@ sadvectors = w2v.Word2Vec(sentences, seed= 42, workers=multiprocessing.cpu_count
 #Training the word2vec neural net
 sadvectors.train(sentences,total_examples=len(sentences),epochs=50)
 
-os.chdir(r'C:\Users\Isaac Csekey\Documents\MoodData')
+os.chdir(r"C:\Users\Isaac Csekey\Documents\GitHub\100-Days-of-ML-Code")
 
 #Saving the model
 sadvectors.save('mood2vec.w2v')
