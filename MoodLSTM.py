@@ -11,15 +11,18 @@ import tflearn as tl
 import gensim.models as w2v
 import os
 import re
+from random import shuffle
+import nltk
+from autocorrect import spell
 
-os.chdir(r"C:\Users\Isaac Csekey\Documents\MoodData")
+os.chdir(r"C:\Users\Isaac Csekey\Documents\GitHub\100-Days-of-ML-Code")
 svctrs = w2v.KeyedVectors.load("mood2vec.w2v")
 
 #Setting up training and testing data 
 
 labelslist = subreddits = ['angry',"SuicideWatch",'depression','happy','BPD','mentalillness','sad','hate','mentalhealth','depression_help','depressionregimens','Anxiety']
 path = r"C:\Users\Isaac Csekey\Documents\MoodData"
-
+data = [] #For training and testing
 
 #A function to get the data from the directories and clean it up a bit
 def getData(subreddit_list):
@@ -45,20 +48,70 @@ def getData(subreddit_list):
                 
                 #An instance of a string that will act as a collector for all the text thrown into it
                 collectionstring = str()
+                
+                #Embedding matrix for each post
+                
+                embed = []
+                
                 file = open(filename, 'r')
                 for line in file:
                     collectionstring += line
                 
                 print("Opened ",filename)
                 
-                
+                #Cleaning the data a little
                 collectionstring = re.sub("[^a-zA-Z]"," ", collectionstring)
                 
-                category_list.append(collectionstring.lower())
+                collectionstring = collectionstring.lower()
+                
+                collectionstring = collectionstring.split()
+                
+                
+                #Converting strings to their embedded vectors from the pre-trained word2vec model
+                for item in collectionstring:
+                    
+                    try:
+                        temp = spell(item)
+                        embed.append(svctrs[str(temp)])
+                    except KeyError:
+                        print(item,temp)
+                print("Completed embeddings for", filename)
+                
+                
+                category_list.append(embed)
                 
         labelled_data[item] = category_list
         print(item, "loaded to dictionary\n")
         
+
     return labelled_data
 
+
+#A function to take data from a dictionary and convert into a feature/label list of lists i.e. [[x,y],[x,y]...]
+def toXY(dataDict):
+    
+    Labeled = []
+    
+    for key in dataDict.keys():
+        templist = dataDict[str(key)]
+        
+        for post in templist:
+            Labeled.append([post,str(key)])
+        
+    return Labeled
+
 data_dict = getData(labelslist)
+
+XY = toXY(data_dict)
+
+#Randomizing the entries in the list 
+   
+data = XY
+shuffle(data)
+
+
+#This is where the fun begins
+#______________________________________________________________________________
+#|                               LSTM TIME                                    | 
+#|____________________________________________________________________________|
+
