@@ -77,12 +77,13 @@ all_subs = readPost(path,subreddits)
 sentences = listOfWords(all_subs)
 
 #Creating the word2vec
-sadvectors = w2v.Word2Vec(sentences, seed= 42, workers=multiprocessing.cpu_count(), size = 250, min_count = 3, window = 10, sample = 1e-3 )
+sadvectors = w2v.Word2Vec(sentences, seed= 42, workers=multiprocessing.cpu_count(), size = 100, min_count = 0, window = 15, sample = 1e-5 )
 
 #Training the word2vec neural net
-sadvectors.train(sentences,total_examples=len(sentences),epochs=50)
+sadvectors.train(sentences,total_examples=len(all_subs),epochs=30)
 
 os.chdir(r"C:\Users\Isaac Csekey\Documents\GitHub\100-Days-of-ML-Code")
 
 #Saving the model
 sadvectors.save('mood2vec.w2v')
+

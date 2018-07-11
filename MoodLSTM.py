@@ -13,11 +13,12 @@ import os
 import re
 from random import shuffle
 import nltk
-from autocorrect import spell
+import codecs
 
 os.chdir(r"C:\Users\Isaac Csekey\Documents\GitHub\100-Days-of-ML-Code")
-svctrs = w2v.KeyedVectors.load("mood2vec.w2v")
 
+#Loading a google word vectors library
+svctrs= w2v.KeyedVectors.load_word2vec_format('GoogleNews-vectors-negative300.bin', binary= True)
 #Setting up training and testing data 
 
 labelslist = subreddits = ['angry',"SuicideWatch",'depression','happy','BPD','mentalillness','sad','hate','mentalhealth','depression_help','depressionregimens','Anxiety']
@@ -53,9 +54,11 @@ def getData(subreddit_list):
                 
                 embed = []
                 
-                file = open(filename, 'r')
-                for line in file:
-                    collectionstring += line
+                with codecs.open(filename, 'r', 'utf-8') as file:
+                    try:
+                        collectionstring += file.read()
+                    except UnicodeDecodeError:
+                        pass
                 
                 print("Opened ",filename)
                 
@@ -69,12 +72,10 @@ def getData(subreddit_list):
                 
                 #Converting strings to their embedded vectors from the pre-trained word2vec model
                 for item in collectionstring:
-                    
                     try:
-                        temp = spell(item)
-                        embed.append(svctrs[str(temp)])
+                        embed.append(svctrs[item])
                     except KeyError:
-                        print(item,temp)
+                        pass
                 print("Completed embeddings for", filename)
                 
                 
