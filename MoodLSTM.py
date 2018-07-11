@@ -116,3 +116,38 @@ shuffle(data)
 #|                               LSTM TIME                                    | 
 #|____________________________________________________________________________|
 
+#Preparing the data for training and testing
+train = data[0:int(0.8*len(XY))]
+test = data[1+int(0.8*len(XY)):len(XY)]
+
+trainX,trainY,testX,testY = []
+
+for i in range(len(train)):
+    temp = data[i]
+    trainX.append(temp[0])
+    trainY.append(temp[1])
+
+for h in range(len(test)):
+    temp = data[i]
+    testX.append(temp[0])
+    testY.append(temp[1])
+#Padding the data for the different lengths of words
+trainX = tl.data_utils.pad_sequences(trainX, maxlen = 400, value = 0.)
+testX = tl.data_utils.pad_sequences(testX, maxlen = 400, value = 0.)
+
+#Categorizing the labels
+trainY = tl.data_utils.to_categorical(trainY)
+testY = tl.data_utils.to_categorical(testY)
+
+#BUILD THE NETWORK
+net = tl.input_data([None, 400])
+net = tl.embedding(net, input_dim = len(data), output_dim = 200)
+net = tl.lstm(net, 200, dropout = 0.8)
+net = tl.fully_connected(net, len(labelslist), activation = 'softmax')
+net = tl.regression(net, optimizer = 'adam', learning_rate = 0.01, loss = 'categorical_crossentropy')
+
+print("Model built")
+
+#Training model 
+model = tl.DNN(net, tensorboard_verbose = 0)
+model.fit(trainX,trainY,validation_set = (testX,testY), show_metric = True, batch_size = 32)
