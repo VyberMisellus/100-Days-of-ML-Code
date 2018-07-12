@@ -15,7 +15,7 @@ from random import shuffle
 import nltk
 import codecs
 
-os.chdir(r"C:\Users\Isaac Csekey\Documents\GitHub\100-Days-of-ML-Code")
+os.chdir(r"C:\Users\isaac\Documents\GitHub\100-Days-of-ML-Code")
 
 #Loading a google word vectors library
 svctrs= w2v.KeyedVectors.load_word2vec_format('GoogleNews-vectors-negative300.bin', binary= True)
@@ -71,15 +71,10 @@ def getData(subreddit_list):
                 
                 
                 #Converting strings to their embedded vectors from the pre-trained word2vec model
-                for item in collectionstring:
-                    try:
-                        embed.append(svctrs[item])
-                    except KeyError:
-                        pass
-                print("Completed embeddings for", filename)
                 
                 
-                category_list.append(embed)
+                
+                category_list.append(collectionstring)
                 
         labelled_data[item] = category_list
         print(item, "loaded to dictionary\n")
@@ -101,13 +96,31 @@ def toXY(dataDict):
         
     return Labeled
 
+def vectorize(dataDictionary):
+    
+    total_XY = []
+    
+    for key in dataDictionary.keys():
+        post_set = dataDictionary[key]
+        
+        for post in post_set:
+            matrix_embed = []
+            for word in post:
+                try:
+                    matrix_embed.append(svctrs[word])
+                except KeyError:
+                    pass
+            total_XY.append([matrix_embed, key])
+            
+    return total_XY
+                
 data_dict = getData(labelslist)
 
-XY = toXY(data_dict)
+vectored = vectorize(data_dict)
 
 #Randomizing the entries in the list 
    
-data = XY
+data = vectored
 shuffle(data)
 
 
@@ -117,8 +130,8 @@ shuffle(data)
 #|____________________________________________________________________________|
 
 #Preparing the data for training and testing
-train = data[0:int(0.8*len(XY))]
-test = data[1+int(0.8*len(XY)):len(XY)]
+train = data[0:int(0.8*len(vectored))]
+test = data[1+int(0.8*len(vectored)):len(vectored)]
 
 trainX,trainY,testX,testY = []
 
@@ -132,8 +145,8 @@ for h in range(len(test)):
     testX.append(temp[0])
     testY.append(temp[1])
 #Padding the data for the different lengths of words
-trainX = tl.data_utils.pad_sequences(trainX, maxlen = 400, value = 0.)
-testX = tl.data_utils.pad_sequences(testX, maxlen = 400, value = 0.)
+trainX = tl.data_utils.pad_sequences(trainX, maxlen = 1000, value = 0.)
+testX = tl.data_utils.pad_sequences(testX, maxlen = 1000, value = 0.)
 
 #Categorizing the labels
 trainY = tl.data_utils.to_categorical(trainY)
