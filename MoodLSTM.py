@@ -22,7 +22,7 @@ svctrs= w2v.KeyedVectors.load_word2vec_format('GoogleNews-vectors-negative300.bi
 #Setting up training and testing data 
 
 labelslist = subreddits = ['angry',"SuicideWatch",'depression','happy','BPD','mentalillness','sad','hate','mentalhealth','depression_help','depressionregimens','Anxiety']
-path = r"C:\Users\Isaac Csekey\Documents\MoodData"
+path = r"C:\Users\isaac\Documents\GitHub\100-Days-of-ML-Code"
 data = [] #For training and testing
 
 #A function to get the data from the directories and clean it up a bit
