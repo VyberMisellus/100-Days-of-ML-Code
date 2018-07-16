@@ -16,7 +16,7 @@ import gensim.models as w2v
 import os
 import re
 from random import shuffle
-import nltk
+#import nltk
 import codecs
 import numpy as np
 
@@ -54,11 +54,6 @@ def getData(subreddit_list):
                 
                 #An instance of a string that will act as a collector for all the text thrown into it
                 collectionstring = str()
-                
-                #Embedding matrix for each post
-                
-                embed = []
-                
                 with codecs.open(filename, 'r', 'utf-8') as file:
                     try:
                         collectionstring += file.read()
@@ -102,29 +97,53 @@ def toXY(dataDict):
     return Labeled
 
 def vectorize(dataDictionary):
-    
+    #All labels and features
     total_XY = []
+    data_conv = dict()
+    i = 0
+    for item in labelslist:
+        data_conv[item] = i
+        i+=1
     
+    #Through each key
     for key in dataDictionary.keys():
+        
+        #Each set of posts for each category
         post_set = dataDictionary[key]
         
+        i = 0
+        #Going through each post
         for post in post_set:
+            
+            #Making an embedding matrix from each string
             matrix_embed = []
+            
+            #Going through each word in the post
             for word in post:
+                
+                #Will only give embeddings for words in the embedding dictionary
                 try:
-                    matrix_embed.append(svctrs[word].tolist)
+                    matrix_embed.append(svctrs[word])
                 except KeyError:
                     pass
-            length = 1000-len(matrix_embed)
+            if len(matrix_embed) > 1000:
+                matrix_embed = matrix_embed[:999]
+            if len(matrix_embed)>0:
+                #Defining the number of extra padded vectors for the embedding matrix
+                length = 1000-len(matrix_embed)
+                j = 0
+                print("Before:",len(matrix_embed),"Internal:",type(matrix_embed[0]))
+                #Padding the matrix
+                while j < length:    
+                    matrix_embed.append(np.array([0.0]*300)) 
+                    j+=1
             
             
-            j = 0
-            while j < length:    
-                matrix_embed.append([0.0]*300) #padding the matrix
-                j+=1
-            #matrix_embed = np.array(matrix_embed).reshape(-1,300,1000,1)
-            total_XY.append([matrix_embed, key])
-            
+                matrix_embed = np.array(matrix_embed).reshape(-1,1000,300,1)
+                print("After:",i,matrix_embed.shape)
+                #matrix_embed = np.array(matrix_embed).reshape(-1,300,1000,1)
+                total_XY.append([matrix_embed, data_conv[key]])
+                i+=1
     return total_XY
                 
 data_dict = getData(labelslist)
@@ -146,17 +165,20 @@ shuffle(data)
 train = data[0:int(0.9*len(data))]
 test = data[int(0.9*len(data))+1:]
 
-trainX=trainY=testX=testY = []
+trainX=[]
+trainY=[]
+testX=[]
+testY = []
 for item in train:
     trainX.append(item[0])
     trainY.append(item[1])
-for item in test:
-    testX.append(item[0])
-    testY.append(item[1])
+for oitem in test:
+    testX.append(oitem[0])
+    testY.append(oitem[1])
 
 
-##BUILD THE NETWORK
-network = input_data(shape=[None, 300, 1000, 1], name='input')
+#BUILD THE NETWORK
+network = input_data(shape=[None, 1000, 300, 1], name='input')
 network = conv_2d(network, 32, 3, activation='relu', regularizer="L2")
 network = max_pool_2d(network, 2)
 network = local_response_normalization(network)
@@ -167,11 +189,10 @@ network = fully_connected(network, 128, activation='tanh')
 network = dropout(network, 0.8)
 network = fully_connected(network, 256, activation='tanh')
 network = dropout(network, 0.8)
-network = fully_connected(network, 10, activation='softmax')
+network = fully_connected(network, 7, activation='softmax')
 network = regression(network, optimizer='adam', learning_rate=0.01, loss='categorical_crossentropy', name='target')
 
-#
-##Training model 
+####Training model 
 model = tl.DNN(network, tensorboard_verbose = 0)
 print("Model built")
 model.fit(trainX,trainY,validation_set = (testX,testY), show_metric = True, batch_size = 100)
