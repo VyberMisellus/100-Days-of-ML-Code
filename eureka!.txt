@@ -1,8 +1,0 @@
-Conbine all embedded words into one matrix, making an image to read into a CNN!!!!
-
-After debugging, I found that maybe there are some empty arrays that are being used. Therefore, make sure to use an "if" statement to make sure to ignore all arrays of len == 0
-
-Memorerror fix: lower/truncate the dimensionality of the incoming matrix to about 600 -> done
-
-Problem with the shapes of incoming matrices as inputs to tflearn: X = tensorflow.reshape(X, shape[-1, 50, 50, 1]) https://stackoverflow.com/questions/40064422/issues-with-shaping-tensorflow-tflearn-inputs-outputs-for-images
-Read through https://github.com/tflearn/tflearn/issues/791
